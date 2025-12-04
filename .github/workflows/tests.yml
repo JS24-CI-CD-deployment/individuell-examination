@@ -14,6 +14,10 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
+    defaults:
+      run:
+        working-directory: strajk-bowling
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -23,13 +27,10 @@ jobs:
         with:
           node-version: 18
           cache: npm
+          cache-dependency-path: strajk-bowling/package-lock.json
 
       - name: Install dependencies
-        run: |
-          cd strajk-bowling
-          npm ci
+        run: npm ci
 
       - name: Run tests
-        run: |
-          cd strajk-bowling
-          npm test -- --run --coverage
+        run: npm test -- --run --coverage
