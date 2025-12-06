@@ -67,4 +67,23 @@ describe("Användaren skall kunna ange skostorlek för varje spelare", () => {
     expect(shoeInput3).toBeInTheDocument();
     expect(shoeInput4).toBeInTheDocument();
   });
+
+  test("- knappen skall ta bort ett fält", async () => {
+    const twoPlayers = [{ id: "p1" }, { id: "p2" }];
+
+    render(
+      <Shoes
+        shoes={twoPlayers}
+        updateSize={updateSize}
+        addShoe={addShoe}
+        removeShoe={removeShoe}
+      />
+    );
+
+    const removeButton = screen.getByRole("button", { name: "-" });
+
+    await userEvent.click(removeButton);
+
+    expect(removeShoe).toHaveBeenCalledWith("p1");
+  });
 });
