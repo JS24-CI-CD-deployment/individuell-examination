@@ -91,4 +91,37 @@ describe("Integration Tests: Booking Flow (VG Requirement", () => {
     ).toBeInTheDocument();
     expect(mockedNavigate).not.toHaveBeenCalled();
   });
+
+  test("Visar felmeddelande 'Alla fält måste vara ifyllda' om Datum saknas", async () => {
+    render(
+      <BrowserRouter>
+        <Booking />
+      </BrowserRouter>
+    );
+    const { dateInput, timeInput, peopleInput, lanesInput } = getInputs();
+    const submitButton = await screen.findByRole("button", {
+      name: /strIIIIIike!/i,
+    });
+    const addShoeButton = screen.getByRole("button", { name: "+" });
+
+    await userEvent.type(timeInput, "18:00");
+    await userEvent.type(peopleInput, "2");
+    await userEvent.type(lanesInput, "1");
+
+    await userEvent.click(addShoeButton);
+    await userEvent.click(addShoeButton);
+    const shoeInput1 = document.querySelector("input[name='p1']");
+    const shoeInput2 = document.querySelector("input[name='p2']");
+    if (shoeInput1 && shoeInput2) {
+      await userEvent.type(shoeInput1, "42");
+      await userEvent.type(shoeInput2, "42");
+    }
+
+    await userEvent.click(submitButton);
+
+    expect(
+      await screen.findByText(/Alla fälten måste vara ifyllda/i)
+    ).toBeInTheDocument();
+    expect(mockedNavigate).not.toHaveBeenCalled();
+  });
 });
