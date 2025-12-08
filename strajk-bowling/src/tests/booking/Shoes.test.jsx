@@ -8,14 +8,23 @@ const updateSize = vi.fn();
 const removeShoe = vi.fn();
 
 const singleShoe = [{ id: "p1", size: "" }];
-
+const twoPlayers = [
+  { id: "p1", size: "40" },
+  { id: "p2", size: "42" },
+];
+const fourPlayers = [
+  { id: "p1", size: "42" },
+  { id: "p2", size: "38" },
+  { id: "p3", size: "" },
+  { id: "p4", size: "45" },
+];
 describe("Unit Tests: Shoes Component(Skostorlekar)", () => {
-  // AC: ”Användaren ska kunna ange skostorlek för varje spelare.”
   afterEach(() => {
     updateSize.mockClear();
     addShoe.mockClear();
     removeShoe.mockClear();
   });
+  // AC: ”Användaren ska kunna ange skostorlek för varje spelare.”
   test("Användaren kan ange skostorlek och updateSize anropas", async () => {
     render(
       <Shoes
@@ -26,7 +35,7 @@ describe("Unit Tests: Shoes Component(Skostorlekar)", () => {
       />
     );
 
-    const shoeInput = screen.getByTestId("shoe-input-1");
+    const shoeInput = screen.getByLabelText(/Shoe size \/ person 1/i);
 
     await userEvent.type(shoeInput, "42");
 
@@ -45,7 +54,7 @@ describe("Unit Tests: Shoes Component(Skostorlekar)", () => {
         removeShoe={removeShoe}
       />
     );
-    const shoeInput = screen.getByTestId("shoe-input-1");
+    const shoeInput = screen.getByLabelText(/Shoe size \/ person 1/i);
 
     await userEvent.clear(shoeInput);
     await userEvent.type(shoeInput, "42");
@@ -56,8 +65,6 @@ describe("Unit Tests: Shoes Component(Skostorlekar)", () => {
 
   // AC: Användaren ska kunna ta bort ett tidigare valt fält för skostorlek, genom att klicka på en "-"-knapp vid varje spelare.
   test("'-' knappen ska anropa 'removeShoe' med korrekt spelar-ID", async () => {
-    const twoPlayers = [{ id: "p1" }, { id: "p2" }];
-
     render(
       <Shoes
         shoes={twoPlayers}
@@ -73,7 +80,7 @@ describe("Unit Tests: Shoes Component(Skostorlekar)", () => {
 
     expect(removeShoe).toHaveBeenCalledWith("p1");
   });
-  // AC: Användaren ska kunna lägga till ett nytt skostorleksfält
+  //omfattar AC: Användaren ska kunna lägga till ett nytt skostorleksfält
   test("'+' knappen ska anropa 'addShoe' för att lägga till ett nytt fält", async () => {
     render(
       <Shoes
@@ -94,12 +101,6 @@ describe("Unit Tests: Shoes Component(Skostorlekar)", () => {
 
   // AC: Systemet ska visa en översikt där användaren kan kontrollera de valda skostorlekarna för varje spelare innan bokningen slutförs.
   test("Renderar ett fält för varje spelare och visar översiktliga värden", () => {
-    const fourPlayers = [
-      { id: "p1", size: "42" },
-      { id: "p2", size: "38" },
-      { id: "p3", size: "" },
-      { id: "p4", size: "45" },
-    ];
     render(
       <Shoes
         shoes={fourPlayers}
@@ -109,10 +110,10 @@ describe("Unit Tests: Shoes Component(Skostorlekar)", () => {
       />
     );
 
-    const shoeInput1 = screen.getByTestId("shoe-input-1");
-    const shoeInput2 = screen.getByTestId("shoe-input-2");
-    const shoeInput3 = screen.getByTestId("shoe-input-3");
-    const shoeInput4 = screen.getByTestId("shoe-input-4");
+    const shoeInput1 = screen.getByLabelText(/Shoe size \/ person 1/i);
+    const shoeInput2 = screen.getByLabelText(/Shoe size \/ person 2/i);
+    const shoeInput3 = screen.getByLabelText(/Shoe size \/ person 3/i);
+    const shoeInput4 = screen.getByLabelText(/Shoe size \/ person 4/i);
 
     expect(shoeInput1).toBeInTheDocument();
     expect(shoeInput2).toBeInTheDocument();

@@ -5,6 +5,7 @@ import Input from "../Input/Input";
 
 function Shoes({ updateSize, addShoe, removeShoe, shoes }) {
   const shoeComps = shoes.map((input, index) => {
+    const inputId = `shoe-${input.id}`;
     const label = `Shoe size / person ${index + 1}`;
     const shoeInput = (
       <article className="shoes__form" key={input.id}>
@@ -15,6 +16,8 @@ function Shoes({ updateSize, addShoe, removeShoe, shoes }) {
           name={input.id}
           handleChange={updateSize}
           maxLength={2}
+          id={inputId}
+          defaultValue={input.size}
         />
         <button
           className="shoes__button shoes__button--small"
