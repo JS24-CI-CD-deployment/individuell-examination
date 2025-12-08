@@ -1,9 +1,11 @@
 import { render, screen, cleanup } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { BrowserRouter } from "react-router-dom";
+import { BrowserRouter, json } from "react-router-dom";
 import { describe, expect, test, vi, afterEach } from "vitest";
 import Booking from "../../views/Booking";
 import "@testing-library/jest-dom";
+import { server } from "../../tests/mocks/server";
+import { handlers } from "../../tests/mocks/handlers";
 
 const mockedNavigate = vi.fn();
 vi.mock("react-router-dom", async (importOriginal) => {
@@ -154,6 +156,111 @@ describe("Integration Tests: Booking Flow (VG Requirement", () => {
 
     expect(
       await screen.findByText(/Det får max vara 4 spelare per bana/i)
+    ).toBeInTheDocument();
+    expect(mockedNavigate).not.toHaveBeenCalled();
+  });
+
+  test("Slutför lyckad bokning, navigerar och lagrar bekräftelse (MSW", async () => {
+    render(
+      <BrowserRouter>
+        <Booking />
+      </BrowserRouter>
+    );
+
+    const { dateInput, timeInput, peopleInput, lanesInput } = getInputs();
+
+    const submitButton = await screen.findByRole("button", {
+      name: /strIIIIIike!/i,
+    });
+    const addShoeButton = screen.getByRole("button", { name: "+" });
+
+    await userEvent.type(dateInput, "2026-06-06");
+    await userEvent.type(timeInput, "18:00");
+    await userEvent.type(peopleInput, "2");
+    await userEvent.type(lanesInput, "1");
+
+    await userEvent.click(addShoeButton);
+    await userEvent.click(addShoeButton);
+
+    const shoeInputs = document.querySelectorAll(".input__field.shoes__input");
+    for (const input of shoeInputs) {
+      await userEvent.type(input, "42");
+    }
+
+    await userEvent.click(submitButton);
+
+    await vi.waitFor(() => {
+      expect(sessionStorageMock.setItem).toHaveBeenCalled();
+    });
+
+    expect(sessionStorageMock.setItem).toHaveBeenCalledWith(
+      "confirmation",
+      JSON.stringify({ id: "SB-TEST-007", price: 340 })
+    );
+  });
+  test("Visar felmeddelande 'Alla fälten måste vara ifyllda' om TID saknas", async () => {
+    render(
+      <BrowserRouter>
+        <Booking />
+      </BrowserRouter>
+    );
+    const { dateInput, timeInput, peopleInput, lanesInput } = getInputs();
+    const submitButton = await screen.findByRole("button", {
+      name: /strIIIIIike!/i,
+    });
+    const addShoeButton = screen.getByRole("button", { name: "+" });
+
+    await userEvent.type(dateInput, "2026-06-06");
+    await userEvent.type(peopleInput, "2");
+    await userEvent.type(lanesInput, "1");
+    await userEvent.clear(timeInput);
+
+    await userEvent.click(addShoeButton);
+    await userEvent.click(addShoeButton);
+
+    const shoeInputs = document.querySelectorAll(".input__field.shoes__input");
+    for (const input of shoeInputs) {
+      await userEvent.type(input, "42");
+    }
+
+    await userEvent.click(submitButton);
+
+    expect(
+      await screen.findByText(/Alla fälten måste vara ifyllda/i)
+    ).toBeInTheDocument();
+    expect(mockedNavigate).not.toHaveBeenCalled();
+  });
+  test("Visar felmeddelande om inte alla skostorlekar är ifyllda", async () => {
+    render(
+      <BrowserRouter>
+        <Booking />
+      </BrowserRouter>
+    );
+    const { dateInput, timeInput, peopleInput, lanesInput } = getInputs();
+    const submitButton = await screen.findByRole("button", {
+      name: /strIIIIIike!/,
+    });
+    const addShoeButton = screen.getByRole("button", { name: "+" });
+
+    await userEvent.type(dateInput, "2026-06-06");
+    await userEvent.type(timeInput, "18:00");
+    await userEvent.type(peopleInput, "2");
+    await userEvent.type(lanesInput, "1");
+
+    await userEvent.click(addShoeButton);
+    await userEvent.click(addShoeButton);
+
+    const allShoeInputs = document.querySelectorAll(
+      ".input__field.shoes__input"
+    );
+    if (allShoeInputs.length > 0) {
+      await userEvent.type(allShoeInputs[0], "42");
+    }
+
+    await userEvent.click(submitButton);
+
+    expect(
+      await screen.findByText(/Alla skor måste vara ifyllda/i)
     ).toBeInTheDocument();
     expect(mockedNavigate).not.toHaveBeenCalled();
   });

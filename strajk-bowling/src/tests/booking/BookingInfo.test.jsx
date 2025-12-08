@@ -2,6 +2,9 @@ import userEvent from "@testing-library/user-event";
 import { describe, expect, expectTypeOf, test, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import BookingInfo from "../../../src/components/BookingInfo/BookingInfo";
+import { handlers } from "../mocks/handlers";
+import { BrowserRouter } from "react-router-dom";
+import Booking from "../../views/Booking";
 
 const mockUpdate = vi.fn();
 
@@ -58,5 +61,38 @@ describe("Test: Lanes Input", () => {
     expect(lanesInput.value).toBe("1");
 
     expect(mockUpdate).toHaveBeenCalledWith(expect.anything());
+  });
+  test("visar felmeddelande vid fullbokning (MSW 400)", async () => {
+    server.use(handlers[1]);
+
+    render(
+      <BrowserRouter>
+        <Booking />
+      </BrowserRouter>
+    );
+    const { dateInput, timeInput, peopleInput, lanesInput } = getInputs();
+    const submitButton = await screen.findByRole("button", {
+      name: /strIIIIIike!/i,
+    });
+    const addShoeButton = screen.getByRole("button", { name: "+" });
+
+    await userEvent.type(dateInput, "2026-06-06");
+    await userEvent.type(timeInput, "18:00");
+    await userEvent.type(peopleInput, "2");
+    await userEvent.type(lanesInput, "1");
+
+    await userEvent.click(addShoeButton);
+    await userEvent.click(addShoeButton);
+    const shoeInput = document.querySelectorAll(".input__field.shoes__input");
+    for (const input of shoeInput) {
+      await userEvent.type(input, "42");
+    }
+
+    await userEvent.click(submitButton);
+
+    expect(
+      await screen.findByText(/Banorna är tyvärr fullbokade/i)
+    ).toBeInTheDocument();
+    expect(mockedNavigate);
   });
 });
