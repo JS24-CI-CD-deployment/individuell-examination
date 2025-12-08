@@ -5,6 +5,22 @@ const API_URL =
 
 export const handlers = [
   http.post(API_URL, async ({ request }) => {
+    const body = await request.json();
+    const { bowlers, lanesAvailable } = body;
+
+    if (bowlers < 1) {
+      return HttpResponse.json(
+        { error: "Antal spelare måste vara mint 1" },
+        { status: 400 }
+      );
+    }
+    if (!lanesAvailable) {
+      return HttpResponse.json(
+        { error: "Banorna är tyvärr fullbokade. Välj en annan tid." },
+        { status: 400 }
+      );
+    }
+
     return HttpResponse.json(
       {
         bookingDetails: {
@@ -13,15 +29,6 @@ export const handlers = [
         },
       },
       { status: 201 }
-    );
-  }),
-
-  http.post(API_URL, async ({ request }) => {
-    return HttpResponse.json(
-      {
-        error: "Banorna är tyvärr fullbokade. Välj en annan tid.",
-      },
-      { status: 400 }
     );
   }),
 ];

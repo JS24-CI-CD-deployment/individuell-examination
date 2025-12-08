@@ -54,7 +54,7 @@ describe("Unit Tests: Shoes Component(Skostorlekar)", () => {
     expect(updateSize).toHaveBeenCalledTimes(3);
   });
 
-  //AC: Användaren ska kunna to bort ett tidigare valt fält för skostorlek, genom att klicka på en "-"-knapp vid varje spelare.
+  // AC: Användaren ska kunna ta bort ett tidigare valt fält för skostorlek, genom att klicka på en "-"-knapp vid varje spelare.
   test("'-' knappen ska anropa 'removeShoe' med korrekt spelar-ID", async () => {
     const twoPlayers = [{ id: "p1" }, { id: "p2" }];
 
@@ -73,9 +73,7 @@ describe("Unit Tests: Shoes Component(Skostorlekar)", () => {
 
     expect(removeShoe).toHaveBeenCalledWith("p1");
   });
-
-  //AC: Det ska vara möjligt att välja skostorlek för alla spelare som ingår i bokningen.
-  // Omfattar AC: Användaren ska kunna lägga till ett nytt skostorleksfäl
+  // AC: Användaren ska kunna lägga till ett nytt skostorleksfält
   test("'+' knappen ska anropa 'addShoe' för att lägga till ett nytt fält", async () => {
     render(
       <Shoes

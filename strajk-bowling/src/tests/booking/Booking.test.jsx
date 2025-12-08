@@ -37,8 +37,9 @@ describe("Integration Tests: Booking Flow (VG Requirement", () => {
   afterEach(() => {
     cleanup();
     vi.clearAllMocks();
+    server.resetHandlers();
   });
-
+  // AC: Visar felmeddelande om fält saknas (Spelare)
   test("Visar felmeddelande 'Alla fälten måste vara ifyllda' om SPELARE saknas", async () => {
     render(
       <BrowserRouter>
@@ -63,6 +64,7 @@ describe("Integration Tests: Booking Flow (VG Requirement", () => {
     expect(mockedNavigate).not.toHaveBeenCalled();
   });
 
+  // VG 3: Visar felmeddelande om antalet skor inte stämmer överens med antal spelare
   test("Visar felmeddelande om antalet skor inte stämmer överens med antal spelare", async () => {
     render(
       <BrowserRouter>
@@ -93,7 +95,7 @@ describe("Integration Tests: Booking Flow (VG Requirement", () => {
     ).toBeInTheDocument();
     expect(mockedNavigate).not.toHaveBeenCalled();
   });
-
+  // AC: Visar felmeddelande om fält saknas (Datum)
   test("Visar felmeddelande 'Alla fält måste vara ifyllda' om Datum saknas", async () => {
     render(
       <BrowserRouter>
@@ -126,7 +128,7 @@ describe("Integration Tests: Booking Flow (VG Requirement", () => {
     ).toBeInTheDocument();
     expect(mockedNavigate).not.toHaveBeenCalled();
   });
-
+  // VG 2: Visar felmeddelande om spelare/bana överskrider maxgränsen (Reserveringslogik)
   test("VG: visar felmeddelande 'Det får max vara 4 spelare per bana'", async () => {
     render(
       <BrowserRouter>
@@ -159,7 +161,7 @@ describe("Integration Tests: Booking Flow (VG Requirement", () => {
     ).toBeInTheDocument();
     expect(mockedNavigate).not.toHaveBeenCalled();
   });
-
+  // VG 5: Testar det kompletta lyckade flödet (MSW Success, Lagring & Navigering)
   test("Slutför lyckad bokning, navigerar och lagrar bekräftelse (MSW", async () => {
     render(
       <BrowserRouter>
@@ -197,7 +199,12 @@ describe("Integration Tests: Booking Flow (VG Requirement", () => {
       "confirmation",
       JSON.stringify({ id: "SB-TEST-007", price: 340 })
     );
+    expect(mockedNavigate).toHaveBeenCalledWith(
+      "/confirmation",
+      expect.any(Object)
+    );
   });
+  // AC: Visar felmeddelande om fält saknas (Tid)
   test("Visar felmeddelande 'Alla fälten måste vara ifyllda' om TID saknas", async () => {
     render(
       <BrowserRouter>
@@ -230,6 +237,7 @@ describe("Integration Tests: Booking Flow (VG Requirement", () => {
     ).toBeInTheDocument();
     expect(mockedNavigate).not.toHaveBeenCalled();
   });
+  // VG 4: Visar felmeddelande om inte alla skostorlekar är ifyllda
   test("Visar felmeddelande om inte alla skostorlekar är ifyllda", async () => {
     render(
       <BrowserRouter>
@@ -261,6 +269,41 @@ describe("Integration Tests: Booking Flow (VG Requirement", () => {
 
     expect(
       await screen.findByText(/Alla skor måste vara ifyllda/i)
+    ).toBeInTheDocument();
+    expect(mockedNavigate).not.toHaveBeenCalled();
+  });
+
+  // VG 6: Testar MSW Felhantering (API-fel / Fullbokat)
+  test("visar felmeddelande vid fullbokning (MSW 400)", async () => {
+    server.use(handlers[1], handlers[0]);
+
+    render(
+      <BrowserRouter>
+        <Booking />
+      </BrowserRouter>
+    );
+    const { dateInput, timeInput, peopleInput, lanesInput } = getInputs();
+    const submitButton = await screen.findByRole("button", {
+      name: /strIIIIIike!/i,
+    });
+    const addShoeButton = screen.getByRole("button", { name: "+" });
+
+    await userEvent.type(dateInput, "2026-06-06");
+    await userEvent.type(timeInput, "18:00");
+    await userEvent.type(peopleInput, "2");
+    await userEvent.type(lanesInput, "1");
+
+    await userEvent.click(addShoeButton);
+    await userEvent.click(addShoeButton);
+    const shoeInputs = document.querySelectorAll(".input__field.shoes__input");
+    for (const input of shoeInputs) {
+      await userEvent.type(input, "42");
+    }
+
+    await userEvent.click(submitButton);
+
+    expect(
+      await screen.findByText("fullbokade", { exact: false })
     ).toBeInTheDocument();
     expect(mockedNavigate).not.toHaveBeenCalled();
   });
