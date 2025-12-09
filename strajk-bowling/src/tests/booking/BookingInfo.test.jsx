@@ -8,20 +8,6 @@ import Booking from "../../views/Booking";
 
 const mockUpdate = vi.fn();
 
-describe("TEST: Time Input", () => {
-  // AC2 – Användaren ska kunna välja en tid från kalender- och tidvalssystemet
-  test("Användaren kan välja en tid och updateBookingDetails anropas korrekt", async () => {
-    render(<BookingInfo updateBookingDetails={mockUpdate} />);
-
-    const timeInput = document.querySelector("input[name='time']");
-
-    await userEvent.type(timeInput, "18:30");
-
-    expect(timeInput.value).toBe("18:30");
-    expect(mockUpdate).toHaveBeenCalledWith(expect.anything());
-  });
-});
-
 describe("Test: Date Input", () => {
   // AC1 – Användaren ska kunna välja ett datum från ett kalender- och tidvalssystem
   test("Användaren kan välja ett datum och updateBookingDetails anropas korrekt", async () => {
@@ -32,6 +18,20 @@ describe("Test: Date Input", () => {
     await userEvent.type(dateInput, "2025-05-04");
 
     expect(dateInput.value).toBe("2025-05-04");
+    expect(mockUpdate).toHaveBeenCalledWith(expect.anything());
+  });
+});
+
+describe("TEST: Time Input", () => {
+  // AC2 – Användaren ska kunna välja en tid från kalender- och tidvalssystemet
+  test("Användaren kan välja en tid och updateBookingDetails anropas korrekt", async () => {
+    render(<BookingInfo updateBookingDetails={mockUpdate} />);
+
+    const timeInput = document.querySelector("input[name='time']");
+
+    await userEvent.type(timeInput, "18:30");
+
+    expect(timeInput.value).toBe("18:30");
     expect(mockUpdate).toHaveBeenCalledWith(expect.anything());
   });
 });
