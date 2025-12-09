@@ -275,7 +275,7 @@ describe("Integration Tests: Booking Flow (VG Requirement", () => {
 
   // VG 6: Testar MSW Felhantering (API-fel / Fullbokat)
   test("visar felmeddelande vid fullbokning (MSW 400)", async () => {
-    server.use(handlers[1], handlers[0]);
+    server.use(handlers[1]);
 
     render(
       <BrowserRouter>
@@ -303,8 +303,11 @@ describe("Integration Tests: Booking Flow (VG Requirement", () => {
     await userEvent.click(submitButton);
 
     expect(
-      await screen.findByText("fullbokade", { exact: false })
+      await screen.findByText((content, element) =>
+        content.includes("fullbokade")
+      )
     ).toBeInTheDocument();
+
     expect(mockedNavigate).not.toHaveBeenCalled();
   });
 });
