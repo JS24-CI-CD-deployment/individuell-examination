@@ -97,7 +97,7 @@ describe("Confirmation View - Navigering och visning av bokning", () => {
     expect(screen.getByText(/Total:/i)).toBeInTheDocument();
     expect(screen.getByText(/340/i)).toBeInTheDocument();
 
-    expect(screen.getByText(/spelare/i)).toBeInTheDocument();
-    expect(screen.getByText(/banor/i)).toBeInTheDocument();
+    expect(screen.getByText(/Who/i)).toBeInTheDocument();
+    expect(screen.getByText(/Lanes/i)).toBeInTheDocument();
   });
 });
