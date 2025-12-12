@@ -1,7 +1,8 @@
 import { render, screen, cleanup } from "@testing-library/react";
-import { describe, test, expect, vi, afterEach } from "vitest";
+import { describe, test, expect, vi, afterEach, expectTypeOf } from "vitest";
 import { BrowserRouter } from "react-router-dom";
 import Confirmation from "../../views/Confirmation";
+import Booking from "../../views/Booking";
 
 const mockedUseLocation = vi.fn();
 
@@ -73,5 +74,30 @@ describe("Confirmation View - Navigering och visning av bokning", () => {
 
     expect(screen.getByText(/Total:/i)).toBeInTheDocument();
     expect(screen.getByText(/340/i)).toBeInTheDocument();
+  });
+  test("Visar uppdelning av pris mellan spelare och banor på bekräftelsesidan", () => {
+    const fakeConfirmation = {
+      when: "2026-06-06T18:00",
+      people: 2,
+      lanes: 1,
+      bookingId: "SB-TEST-007",
+      price: 340,
+    };
+    mockedUseLocation.mockReturnValue({ state: null });
+    sessionStorageMock.getItem.mockReturnValue(
+      JSON.stringify(fakeConfirmation)
+    );
+
+    render(
+      <BrowserRouter>
+        <Confirmation />
+      </BrowserRouter>
+    );
+
+    expect(screen.getByText(/Total:/i)).toBeInTheDocument();
+    expect(screen.getByText(/340/i)).toBeInTheDocument();
+
+    expect(screen.getByText(/spelare/i)).toBeInTheDocument();
+    expect(screen.getByText(/banor/i)).toBeInTheDocument();
   });
 });

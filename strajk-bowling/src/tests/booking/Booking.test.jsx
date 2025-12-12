@@ -381,7 +381,6 @@ test("totalen blir korrekt genom att endast kvarvarande skor skickas", async () 
 
   await userEvent.clear(peopleInput);
   await userEvent.type(peopleInput, "1");
-
   await userEvent.type(shoeInputs[0], "42");
 
   await userEvent.click(submitButton);
@@ -392,12 +391,14 @@ test("totalen blir korrekt genom att endast kvarvarande skor skickas", async () 
 
   const savedArgs = sessionStorageMock.setItem.mock.calls[0][1];
   const saved = JSON.parse(savedArgs);
+  const expectedPrice = 1 * 120 + 1 * 100;
 
-  expect(saved).toEqual({ id: "SB-TEST-007", price: 340 });
+  expect(saved.id).toBe("SB-TEST-007");
+  expect(saved.price).toBe(expectedPrice);
 });
 
 // AC16-AC19: Slutför bokning, får nummer/pris, navigerar till bekräftelsesidan.
-test("Slutför lyckad bokning, navigerar och lagrar bekräftelse (MSW", async () => {
+test("slutför lyckad bokning, sparar bekräftelse och navigerar till /confirmation", async () => {
   render(
     <BrowserRouter>
       <Booking />
