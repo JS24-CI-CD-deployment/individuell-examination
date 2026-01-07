@@ -45,8 +45,10 @@ function Confirmation() {
             customClass="confirmation__input"
             defaultValue={confirmation.bookingId}
             disabled="disabled"
+            testId="booking-number"
           />
-          <article className="confirmation__price">
+          {/* data-testid behövs för att testa att totalsumman visas (User Story 4) */}
+          <article className="confirmation__price" data-testid="total-price">
             <p>Total:</p>
             <p>{confirmation.price} sek</p>
           </article>
@@ -55,7 +57,8 @@ function Confirmation() {
           </button>
         </form>
       ) : (
-        <h2 className="confirmation__no-booking">Inga bokning gjord!</h2>
+        // data-testid behövs för att testa att "Ingen bokning gjord" visas när ingen bokning finns (User Story 5)
+        <h2 className="confirmation__no-booking" data-testid="no-booking-message">Inga bokning gjord!</h2>
       )}
     </section>
   );

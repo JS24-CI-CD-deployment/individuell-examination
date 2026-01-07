@@ -148,7 +148,8 @@ function Booking() {
         removeShoe={removeShoe}
         shoes={shoes}
       />
-      <button className="button booking__button" onClick={book}>
+      {/* data-testid behövs för att testa att användaren kan slutföra bokningen (User Story 4) */}
+      <button className="button booking__button" onClick={book} data-testid="complete-booking-button">
         strIIIIIike!
       </button>
       {error ? <ErrorMessage message={error} /> : ""}

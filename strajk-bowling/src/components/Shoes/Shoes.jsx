@@ -16,11 +16,13 @@ function Shoes({ updateSize, addShoe, removeShoe, shoes }) {
           handleChange={updateSize}
           maxLength={2}
         />
+        {/* data-testid behövs för att testa att användaren kan ta bort skostorleksfält (User Story 3) */}
         <button
           className="shoes__button shoes__button--small"
           onClick={() => {
             removeShoe(input.id);
           }}
+          data-testid={`remove-shoe-${input.id}`}
         >
           -
         </button>
@@ -36,11 +38,13 @@ function Shoes({ updateSize, addShoe, removeShoe, shoes }) {
         <h2 className="shoes__heading">Shoes</h2>
       </header>
       {shoeComps}
+      {/* data-testid behövs för att testa att användaren kan lägga till skostorleksfält (User Story 2) */}
       <button
         className="shoes__button"
         onClick={() => {
           addShoe(nanoid());
         }}
+        data-testid="add-shoe-button"
       >
         +
       </button>
